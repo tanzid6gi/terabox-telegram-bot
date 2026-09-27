@@ -23,7 +23,10 @@ from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandl
 
 LOG = logging.getLogger("terabox_bot")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "").strip()
-RESOLVER_URL = os.environ.get("RESOLVER_URL", "http://127.0.0.1:5000").rstrip("/")
+# Railway assigns PORT dynamically. The bot and resolver share one container,
+# so use that same port for the internal resolver call unless overridden.
+LOCAL_PORT = os.environ.get("PORT", "5000")
+RESOLVER_URL = os.environ.get("RESOLVER_URL", f"http://127.0.0.1:{LOCAL_PORT}").rstrip("/")
 MAX_UPLOAD_MB = float(os.environ.get("MAX_UPLOAD_MB", "49"))
 MAX_UPLOAD_BYTES = int(MAX_UPLOAD_MB * 1024 * 1024)
 DOWNLOAD_TIMEOUT = int(os.environ.get("DOWNLOAD_TIMEOUT_SECONDS", "1800"))
