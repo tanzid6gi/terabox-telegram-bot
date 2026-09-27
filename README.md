@@ -2,7 +2,7 @@
 
 A Railway-ready Telegram bot for resolving authorized TeraBox shared links.
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/new/github?repo=https%3A%2F%2Fgithub.com%2FYOUR_GITHUB_USER%2FYOUR_REPOSITORY)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/new/github?repo=https%3A%2F%2Fgithub.com%2Ftanzid6gi%2Fterabox-telegram-bot)
 
 ## Quick start
 
