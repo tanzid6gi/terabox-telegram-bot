@@ -16,6 +16,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 import json
+import unicodedata
 
 import aiohttp
 from telegram import Update
@@ -78,6 +79,14 @@ async def resolve_share(url: str) -> dict[str, Any]:
                 raw_cookie = f"ndus={raw_cookie}"
     if not raw_cookie:
         raise RuntimeError("TERABOX_COOKIE or COOKIE_JSON is not configured")
+    # Browser copy/paste can include invisible marks such as U+200E/U+200F.
+    # Cookie names and values used by HTTP clients must be ASCII.
+    raw_cookie = "".join(
+        ch for ch in raw_cookie
+        if ord(ch) < 128 and unicodedata.category(ch) != "Cf"
+    ).strip()
+    if not raw_cookie:
+        raise RuntimeError("The configured TeraBox cookie is empty after cleanup")
     update_credentials(cookie=raw_cookie)
     result = await resolve_link(url, action="d", wait_for_transcoding=False)
     if result.get("errno") not in (None, 0) or result.get("error"):
