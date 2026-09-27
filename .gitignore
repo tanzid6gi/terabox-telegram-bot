@@ -1,0 +1,26 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build and package output
+build/
+dist/
+*.egg-info/
+
+# Environments and secrets
+.env
+.env.*
+!.env.example
+cookies.json
+
+# Temporary downloads and local state
+downloads/
+tmp/
+temp/
+*.tmp
+*.log
+
+# IDE files
+.vscode/
+.idea/

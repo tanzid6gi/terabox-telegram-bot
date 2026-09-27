@@ -1,0 +1,5 @@
+Flask[async]>=3.1,<4
+Werkzeug>=3.1,<4
+aiohttp>=3.9,<4
+gunicorn>=23,<24
+python-telegram-bot>=22,<23
