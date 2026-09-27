@@ -14,6 +14,8 @@ A Railway-ready Telegram bot for resolving authorized TeraBox shared links.
 
 Small files are uploaded temporarily to Telegram and deleted. Larger files receive a temporary direct download link. Configure `MAX_UPLOAD_MB` if needed, but the normal Telegram Bot API limit is approximately 50 MB.
 
+Optional: set `TERABOX_COOKIE` to your complete browser cookie header instead of `COOKIE_JSON`.
+
 Read **[README-RAILWAY.md](README-RAILWAY.md)** for the complete deployment guide.
 
 Never commit or share `BOT_TOKEN` or TeraBox cookies. Use only public/shared files or files you are authorized to access.

@@ -15,11 +15,13 @@ import re
 import tempfile
 from pathlib import Path
 from typing import Any
+import json
 
 import aiohttp
 from telegram import Update
 from telegram.constants import ChatAction
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from terabridge_downloader import resolve_link, update_credentials
 
 LOG = logging.getLogger("terabox_bot")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "").strip()
@@ -64,18 +66,32 @@ def safe_name(name: str) -> str:
 
 
 async def resolve_share(url: str) -> dict[str, Any]:
-    timeout = aiohttp.ClientTimeout(total=120)
-    params = {"url": url, "resolve": "true"}
-    async with aiohttp.ClientSession(timeout=timeout) as session:
-        async with session.get(f"{RESOLVER_URL}/api", params=params) as response:
-            try:
-                data = await response.json(content_type=None)
-            except Exception:
-                data = {"status": "error", "message": await response.text()}
-            if response.status >= 400 or data.get("status") != "success":
-                message = data.get("message") or data.get("error") or "TeraBox could not resolve this link."
-                raise RuntimeError(str(message)[:500])
-            return data
+    raw_cookie = os.environ.get("TERABOX_COOKIE", "").strip()
+    if not raw_cookie:
+        raw_cookie = os.environ.get("COOKIE_JSON", "").strip()
+        try:
+            parsed = json.loads(raw_cookie)
+            if isinstance(parsed, dict):
+                raw_cookie = "; ".join(f"{key}={value}" for key, value in parsed.items())
+        except json.JSONDecodeError:
+            if raw_cookie and "=" not in raw_cookie:
+                raw_cookie = f"ndus={raw_cookie}"
+    if not raw_cookie:
+        raise RuntimeError("TERABOX_COOKIE or COOKIE_JSON is not configured")
+    update_credentials(cookie=raw_cookie)
+    result = await resolve_link(url, action="d", wait_for_transcoding=False)
+    if result.get("errno") not in (None, 0) or result.get("error"):
+        raise RuntimeError(str(result.get("error") or result.get("errmsg") or f"TeraBox error {result.get('errno')}"))
+    normalized = []
+    for item in result.get("files", []):
+        normalized.append({
+            "filename": item.get("filename") or item.get("name") or "terabox-file",
+            "size": item.get("size_bytes") or item.get("size") or "unknown",
+            "size_bytes": item.get("size_bytes"),
+            "download_link": item.get("dlink") or item.get("download_link"),
+            "isdir": item.get("isdir", False),
+        })
+    return {"status": "success", "files": normalized}
 
 
 async def download_to_temp(url: str, filename: str) -> Path:

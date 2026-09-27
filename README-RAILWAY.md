@@ -23,6 +23,8 @@ BOT_TOKEN=your_telegram_botfather_token
 COOKIE_JSON=your_terabox_ndus_cookie_value
 ```
 
+`COOKIE_JSON` may be only the `ndus` value, as shown above. You may alternatively add the complete browser cookie header as `TERABOX_COOKIE`; if both are present, `TERABOX_COOKIE` is used.
+
 Do not commit either value to GitHub or paste it into public issues. If you want to use a full cookie object:
 
 ```text
@@ -56,6 +58,8 @@ CACHE_MAX_SIZE=100
 8. Open the bot in Telegram and send `/start`.
 
 The bot uses long polling, so no Telegram webhook or public domain is required for bot operation. The Railway domain is useful for the resolver health/API endpoints.
+
+The Telegram bot uses the bundled direct TeraBox session resolver. It does not depend on a separate hosted proxy service.
 
 ## Behavior
 
